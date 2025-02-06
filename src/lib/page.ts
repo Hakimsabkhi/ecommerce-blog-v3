@@ -13,6 +13,7 @@ export const DashboardAdmin = [
       { name: "Brands", path: "/admin/brand" },
       { name: "Categories", path: "/admin/category" },
       { name: "Sous Categories", path: "/admin/subcategory" },
+      { name: "Products Description", path: "/admin/descriptions" },
       { name: "Products", path: "/admin/product" },
       { name: "Promotion", path: "/admin/promotion" },
       { name: "Reviews", path: "/admin/review" },
