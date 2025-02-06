@@ -3,6 +3,7 @@ import { FC, useEffect, useState } from "react";
 import { BiPencil ,BiTrash} from "react-icons/bi";
 import { FaSpinner } from "react-icons/fa6";
 import Link from "next/link";
+import DeletePopup from "@/components/Popup/DeletePopup";
 interface descriptions{
     _id:string;
     text:string;
@@ -13,6 +14,53 @@ interface descriptions{
 const ProductsDescriptions: FC = () => {
       const [descriptionData, setDescriptionData] = useState<descriptions[]>([]);
        const [loading, setLoading] = useState(true);
+         const [isPopupOpen, setIsPopupOpen] = useState(false);
+         const [selecteddescription, setSelecteddescription] = useState<descriptions | null>(
+           null
+         );
+         const handleDeleteClick = (description: descriptions) => {
+            setSelecteddescription(description);
+            setIsPopupOpen(true);
+          };
+        
+          const handleClosePopup = () => {
+            setIsPopupOpen(false);
+            setSelecteddescription(null);
+          };
+           const deletediscrption = async (discrptionId: string) => {
+              try {
+                const response = await fetch(
+                  `/api/description/admin/deletedescription/${discrptionId}`,
+                  {
+                    method: "DELETE",
+                  }
+                );
+          
+                if (!response.ok) {
+                  throw new Error("Failed to delete description");
+                }
+          
+                // Remove the deleted category from the state
+                setDescriptionData((prev) =>
+                  prev.filter((discrption) => discrption._id !==discrptionId)
+                );
+          
+              } catch (error: unknown) {
+                // Handle different error types effectively
+                if (error instanceof Error) {
+                  console.error("Error deleting discrption:", error.message);
+              
+                } else if (typeof error === "string") {
+                  console.error("String error:", error);
+                  
+                } else {
+                  console.error("Unknown error:", error);
+                  
+                }
+              }  finally {
+                handleClosePopup();
+              }
+            };
       const fetchDescriptionsData = async () => {
         try {
           const response = await fetch(`/api/description/admin/getdescription`, {
@@ -85,9 +133,13 @@ const ProductsDescriptions: FC = () => {
                   <Link href={`/admin/descriptions/${item._id}`}className="bg-gray-800 text-white p-2 rounded-md">
                     <BiPencil size={16} />
                   </Link>
-                  <button className="bg-gray-800 text-white p-2 rounded-md">
-                    <BiTrash size={16} />
+                  <button  onClick={() => handleDeleteClick(item)} className="bg-gray-800 text-white p-2 rounded-md"
+                    disabled={selecteddescription?._id === item._id}>
+                     {selecteddescription?._id === item._id
+                                        ? "Processing...": <BiTrash size={16} />}
                   </button>
+
+                    
                 </td>
               </tr>
             ))}
@@ -95,6 +147,14 @@ const ProductsDescriptions: FC = () => {
                                 )}
         </table>
       </div>
+      {isPopupOpen && selecteddescription && (
+        <DeletePopup
+          handleClosePopup={handleClosePopup}
+          Delete={deletediscrption}
+          id={selecteddescription._id}
+          name={selecteddescription.text}
+        />
+      )}
     </div>
   );
 };
