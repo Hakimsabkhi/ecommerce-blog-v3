@@ -30,7 +30,8 @@ export async function POST(req: NextRequest) {
   try {
     // Handle form data
     const formData = await req.formData();
-    const name = formData.get('name') as string;
+    console.log(formData)
+    /* const name = formData.get('name') as string;
     const description = formData.get('description') as string;
     const ref = formData.get('ref') as string;
     const category = formData.get('category') as string;
@@ -162,8 +163,8 @@ export async function POST(req: NextRequest) {
       statuspage
     });
 
-    await newProduct.save();
-    return NextResponse.json(newProduct, { status: 201 });
+    await newProduct.save(); */
+    return NextResponse.json(/* newProduct , */{ status: 201 });
 
   } catch (error) {
     console.error('Error creating Product:', error);

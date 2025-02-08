@@ -1,15 +1,25 @@
-import React from 'react'
+import React from 'react';
 
-const Text = () => {
-  return (
-    <div className='mt-4'><h2 className="text-lg font-semibold mb-3">Text :</h2>
- 
-    <div className="grid grid-cols-3 gap-4">
-      <input placeholder="text" className="border border-gray-300 rounded p-2" />
-    </div>
-    </div>
-
-  )
+interface TextProp {
+  index: number;
+  desc: { text: string; type: string };
+  onTextChange: (index: number , text: string,desc:string) => void;
 }
 
-export default Text
+const Text: React.FC<TextProp> = ({ index, desc, onTextChange }) => {
+  return (
+    <div className="mt-4">
+      <div className="grid grid-cols-3 gap-4">
+        <input
+          name={desc.text}
+          type="text"
+          placeholder="Text"
+          className="border border-gray-300 rounded p-2"
+          onChange={(e) => onTextChange(index, e.target.value,desc.text)}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default Text;

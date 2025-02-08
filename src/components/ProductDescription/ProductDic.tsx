@@ -21,7 +21,12 @@ const ProductDic = () => {
   const [selectedText, setSelectedText] = useState<string>("");
   const [addedDescriptions, setAddedDescriptions] = useState<SelectedDescription[]>([]);
   const [counter, setCounter] = useState<number>(0);
+  const[selectedDescriptionId,setSelectedDescriptionID]=useState<string>('')
+  const [textValues, setTextValues] = useState<{ text: string; desc: string }[]>([]);
 
+  const [colorValues, setColorValues] = useState<{ desc: string; colors: string[] }[]>([]);
+
+  const [dimensionValues, setDimensionValues] = useState<{ desc:string,height?: string; width?: string; thickness?: string }[]>([]);
   useEffect(() => {
     const fetchDescriptionsData = async () => {
       try {
@@ -42,9 +47,12 @@ const ProductDic = () => {
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedType = e.target.value;
-    setSelectedDescription(selectedType);
 
-    const selectedItem = descriptionData.find((item) => item.type === selectedType);
+    const selectedItem = descriptionData.find((item) => item._id === selectedType);
+   if(selectedItem){
+    setSelectedDescription(selectedItem.type)
+    setSelectedDescriptionID(selectedItem._id)}
+   
     setSelectedText(selectedItem ? selectedItem.text : "");
   };
 
@@ -61,19 +69,42 @@ const ProductDic = () => {
     setSelectedDescription("");
     setSelectedText("");
   };
+  const handleTextChange = (index: number, text: string, desc: string) => {
+    const updatedTextValues = [...textValues];
+    updatedTextValues[index] = { text, desc }; // Assuming each element is an object with 'text' and 'desc' keys
+    setTextValues(updatedTextValues);
+  };
+  
 
+  const handleColorChange = (index: number, colors: string[],desc:string) => {
+    const updatedColorValues = [...colorValues];
+    updatedColorValues[index] = {desc,colors};
+    setColorValues(updatedColorValues);
+  };
+
+  const handleDimensionChange = (index: number, dimensions: {desc:string, height?: string; width?: string; thickness?: string }) => {
+    const updatedDimensionValues = [...dimensionValues];
+    updatedDimensionValues[index] = dimensions;
+    setDimensionValues(updatedDimensionValues);
+  };
+  useEffect(() => {
+    console.log(textValues);
+    console.log(colorValues);
+    console.log(dimensionValues);
+ }, [textValues, colorValues, dimensionValues]);
+ 
   return (
     <div>
       <h1 className="text-3xl font-bold">Product Descriptions</h1>
       <div className="flex gap-2">
         <select
-          value={selectedDescription}
+          value={selectedDescriptionId}
           onChange={handleDescriptionChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-[60%] block p-2.5"
         >
           <option value="">Select Description</option>
           {descriptionData.map((item) => (
-            <option key={item._id} value={item.type}>
+            <option key={item._id} value={item._id}>
               {item.text}
             </option>
           ))}
@@ -88,12 +119,12 @@ const ProductDic = () => {
         </button>
       </div>
 
-      {addedDescriptions.map((desc) => (
+      {addedDescriptions.map((desc,index) => (
         <div key={desc.id} className="mt-4 p-3 border rounded-lg shadow-md bg-white">
           <h2 className="text-lg font-semibold">{desc.text}</h2>
-          {desc.type === "Text" && <Text />}
-          {desc.type === "Colors" && <Color />}
-          {desc.type === "Dimension" && <Dimension />}
+          {desc.type === "Text" && <Text index={index} desc={desc} onTextChange={handleTextChange}/>}
+          {desc.type === "Colors" && <Color index={index}onColorChange={handleColorChange} desc={desc.text} />}
+          {desc.type === "Dimension" && <Dimension index={index} onDimensionChange={handleDimensionChange} desc={desc.text}/>}
         </div>
       ))}
     </div>
