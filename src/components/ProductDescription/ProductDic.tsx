@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Color from "./Color";
 import Text from "./Text";
-import Dimension from "./Dimension"; // Corrected spelling
+import Dimension from "./Dimension";
 
 interface Description {
   _id: string;
@@ -9,49 +9,57 @@ interface Description {
   type: string;
 }
 
+interface SelectedDescription {
+  id: number;
+  type: string;
+  text: string;
+}
+
 const ProductDic = () => {
   const [descriptionData, setDescriptionData] = useState<Description[]>([]);
   const [selectedDescription, setSelectedDescription] = useState<string>("");
-  const [dimensions, setDimensions] = useState<number[]>([]);
-  const [color, setColor] = useState<number[]>([]);
-  const [text, setText] = useState<number[]>([]);
-
-  const fetchDescriptionsData = async () => {
-    try {
-      const response = await fetch(`/api/description/admin/getdescription`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!response.ok) {
-        throw new Error("Error fetching description data");
-      }
-      const data = await response.json();
-      setDescriptionData(data);
-    } catch (error) {
-      console.error("Error fetching description data:", error);
-    }
-  };
+  const [selectedText, setSelectedText] = useState<string>("");
+  const [addedDescriptions, setAddedDescriptions] = useState<SelectedDescription[]>([]);
+  const [counter, setCounter] = useState<number>(0);
 
   useEffect(() => {
+    const fetchDescriptionsData = async () => {
+      try {
+        const response = await fetch(`/api/description/admin/getdescription`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (!response.ok) throw new Error("Error fetching description data");
+        const data = await response.json();
+        setDescriptionData(data);
+      } catch (error) {
+        console.error("Error fetching description data:", error);
+      }
+    };
+
     fetchDescriptionsData();
   }, []);
 
-  // Handle selection change
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedDescription(e.target.value);
+    const selectedType = e.target.value;
+    setSelectedDescription(selectedType);
+
+    const selectedItem = descriptionData.find((item) => item.type === selectedType);
+    setSelectedText(selectedItem ? selectedItem.text : "");
   };
 
-  // Handle "Add Description" button click
   const handleAddDescription = () => {
-    if (selectedDescription === "Dimension") {
-      setDimensions((prev) => [...prev, prev.length + 1]); // Add a new dimension
-    }
-    if (selectedDescription === "Colors") {
-      setColor((prev) => [...prev, prev.length + 1]); // Add a new dimension
-    }
-    if (selectedDescription === "Text") {
-      setText((prev) => [...prev, prev.length + 1]); // Add a new dimension
-    }
+    if (!selectedDescription) return;
+
+    setAddedDescriptions((prev) => [
+      ...prev,
+      { id: counter, type: selectedDescription, text: selectedText },
+    ]);
+
+    setCounter((prev) => prev + 1);
+
+    setSelectedDescription("");
+    setSelectedText("");
   };
 
   return (
@@ -80,16 +88,13 @@ const ProductDic = () => {
         </button>
       </div>
 
-      {text.map((_, index) => (
-        
-        <Text key={index}/>))}
-      {color.map((_, index) => (
-      <Color  key={index} />
-      ))}
-      
-      {/* Render multiple Dimension components */}
-      {dimensions.map((_, index) => (
-        <Dimension key={index} />
+      {addedDescriptions.map((desc) => (
+        <div key={desc.id} className="mt-4 p-3 border rounded-lg shadow-md bg-white">
+          <h2 className="text-lg font-semibold">{desc.text}</h2>
+          {desc.type === "Text" && <Text />}
+          {desc.type === "Colors" && <Color />}
+          {desc.type === "Dimension" && <Dimension />}
+        </div>
       ))}
     </div>
   );
