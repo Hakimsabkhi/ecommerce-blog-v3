@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import ProductDic from "../ProductDescription/ProductDic";
 
 // Define the Category and Brand types
 interface Category {
@@ -538,7 +539,7 @@ const AddProduct = () => {
           </div>
         )}
       </div>
-
+        <ProductDic/>
       <div className="w-full flex justify-end gap-4">
        
         <Link
