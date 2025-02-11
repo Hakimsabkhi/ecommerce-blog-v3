@@ -14,19 +14,24 @@ interface SelectedDescription {
   type: string;
   text: string;
 }
+type ProductDicProps = {
+  textValues: { text: string; desc: string }[];
+  setTextValues: React.Dispatch<React.SetStateAction<{ text: string; desc: string }[]>>;
+  colorValues: { desc: string; colors: string[] }[];
+  setColorValues: React.Dispatch<React.SetStateAction<{ desc: string; colors: string[] }[]>>;
+  dimensionValues: { desc: string; height?: string; width?: string; thickness?: string }[];
+  setDimensionValues: React.Dispatch<React.SetStateAction<{ desc: string; height?: string; width?: string; thickness?: string }[]>>;
+};
 
-const ProductDic = () => {
+const ProductDic: React.FC<ProductDicProps> = ({ textValues, setTextValues, colorValues, setColorValues, dimensionValues, setDimensionValues }) => {
+
   const [descriptionData, setDescriptionData] = useState<Description[]>([]);
   const [selectedDescription, setSelectedDescription] = useState<string>("");
   const [selectedText, setSelectedText] = useState<string>("");
   const [addedDescriptions, setAddedDescriptions] = useState<SelectedDescription[]>([]);
   const [counter, setCounter] = useState<number>(0);
   const[selectedDescriptionId,setSelectedDescriptionID]=useState<string>('')
-  const [textValues, setTextValues] = useState<{ text: string; desc: string }[]>([]);
-
-  const [colorValues, setColorValues] = useState<{ desc: string; colors: string[] }[]>([]);
-
-  const [dimensionValues, setDimensionValues] = useState<{ desc:string,height?: string; width?: string; thickness?: string }[]>([]);
+ 
   useEffect(() => {
     const fetchDescriptionsData = async () => {
       try {
@@ -87,11 +92,7 @@ const ProductDic = () => {
     updatedDimensionValues[index] = dimensions;
     setDimensionValues(updatedDimensionValues);
   };
-  useEffect(() => {
-    console.log(textValues);
-    console.log(colorValues);
-    console.log(dimensionValues);
- }, [textValues, colorValues, dimensionValues]);
+
  
   return (
     <div>

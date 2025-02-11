@@ -55,7 +55,11 @@ const AddProduct = () => {
     statuspage:"",
     subcategory:""
   });
+ const [textValues, setTextValues] = useState<{ text: string; desc: string }[]>([]);
 
+  const [colorValues, setColorValues] = useState<{ desc: string; colors: string[] }[]>([]);
+
+  const [dimensionValues, setDimensionValues] = useState<{ desc:string,height?: string; width?: string; thickness?: string }[]>([]);
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -100,6 +104,7 @@ const AddProduct = () => {
     fetchBrands();
     fetchboutique();
   }, []);
+
     const fetchsubCategories = async (selectcatgoray:string) => {
       try {
         const response = await fetch(`/api/SubCategory/admin/getsubcategoraybycategoray/${selectcatgoray}`, {
@@ -176,6 +181,12 @@ const AddProduct = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const dimensionValuess = dimensionValues.filter(value => value !== undefined);
+    const colorValuess = colorValues.filter(value => value !== undefined);
+    const textValuess = textValues.filter(value => value !== undefined);
+console.log("dimensionValuess",dimensionValuess);
+console.log("colorValuess",colorValuess);
+console.log("textValuess",textValuess);
     const formData = new FormData();
     formData.append("name", productData.name);
     formData.append("info", productData.info);
@@ -195,6 +206,7 @@ const AddProduct = () => {
     formData.append("warranty", productData.warranty);
     formData.append("dimensions", productData.dimensions);
     formData.append("statuspage", productData.statuspage);
+   
     if (image) formData.append("image", image);
     if (images) {
       images.forEach((img, index) => formData.append(`images[${index}]`, img));
@@ -539,7 +551,10 @@ const AddProduct = () => {
           </div>
         )}
       </div>
-        <ProductDic/>
+        <ProductDic textValues={textValues} 
+        setTextValues={setTextValues} colorValues={colorValues} 
+        setColorValues={setColorValues} dimensionValues={dimensionValues} 
+        setDimensionValues={setDimensionValues}/>
       <div className="w-full flex justify-end gap-4">
        
         <Link
